@@ -1,0 +1,35 @@
+<!-- Optional: List of Submitted Reports -->
+{% if reports %}
+<div class="bg-white overflow-auto">
+    <p class="text-xl pb-3 flex items-center">
+        <i class="fas fa-list mr-3"></i> User submitted reports:
+    </p>
+    <table class="min-w-full bg-white">
+        <thead class="bg-gray-800 text-white">
+            <tr>
+                <th class="w-1/3 text-left py-3 px-4 uppercase font-semibold text-sm">Report Name</th>
+                <th class="w-1/5 text-left py-3 px-4 uppercase font-semibold text-sm">Link</th>
+                <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Date Submitted</th>
+            </tr>
+        </thead>
+        <tbody class="text-gray-700">
+            {% for report in reports %}
+                <tr>
+                    <td class="w-1/3 text-left py-3 px-4">{{ report.title }}</td>
+                    {% if report.file %}
+                    <td class="w-1/5 text-left py-3 px-4">
+                        <a href="{{ report.file.url }}"> Link to File </a>
+                    </td>
+                    <td class="w-1/3 text-left py-3 px-4">Submitted on {{ report.created_at|date:"F d, Y" }}</td>
+                    {% else %}
+                    <td class="w-1/5 text-left py-3 px-4">N/A</td>
+                    <td class="w-1/3 text-left py-3 px-4">Submitted on {{ report.created_at|date:"F d, Y" }}</td>
+                    {% endif %}
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% else %}
+<p class="mt-6 text-gray-700 text-base">You have not submitted any reports.</p>
+{% endif %}

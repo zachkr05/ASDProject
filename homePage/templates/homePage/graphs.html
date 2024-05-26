@@ -1,0 +1,91 @@
+        <script>
+            var reportsOverTime = {{ reports_over_time|safe }};
+            var formStatistics = {{ form_statistics|safe }};
+        </script>
+
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                var ctx1 = document.getElementById('chartOne').getContext('2d');
+                var chartOne = new Chart(ctx1, {
+                    type: 'bar',
+                    data: {
+                        labels: Object.keys(formStatistics), // Dynamically set labels
+                        datasets: [{
+                            label: 'Form Status Counts',
+                            data: Object.values(formStatistics), // Dynamically set data
+                            backgroundColor: [
+                                'rgba(255, 99, 132, 0.2)',
+                                'rgba(54, 162, 235, 0.2)',
+                                'rgba(255, 206, 86, 0.2)',
+                                'rgba(75, 192, 192, 0.2)',
+                                'rgba(153, 102, 255, 0.2)',
+                                'rgba(255, 159, 64, 0.2)'
+                            ],
+                            borderColor: [
+                                'rgba(255, 99, 132, 1)',
+                                'rgba(54, 162, 235, 1)',
+                                'rgba(255, 206, 86, 1)',
+                                'rgba(75, 192, 192, 1)',
+                                'rgba(153, 102, 255, 1)',
+                                'rgba(255, 159, 64, 1)'
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            y: {
+                                beginAtZero: true
+                            }
+                        }
+                    }
+                });
+            
+                var ctx2 = document.getElementById('chartTwo').getContext('2d');
+                var dates = reportsOverTime.map(entry => entry.submission_day);
+                var counts = reportsOverTime.map(entry => entry.submitted_count);
+                var maxYValue = Math.max(...counts) * 1.5; // Find the max Y value and add 10% space above it
+
+                var chartTwo = new Chart(ctx2, {
+                    type: 'line',
+                    data: {
+                        labels: reportsOverTime.map(entry => entry.submission_day), // Dynamically set labels
+                        datasets: [{
+                            label: 'Reports Submitted Over Time',
+                            data: reportsOverTime.map(entry => entry.submitted_count), // Dynamically set data
+                            backgroundColor: 'rgba(54, 162, 235, 0.2)',
+                            borderColor: 'rgba(54, 162, 235, 1)',
+                            borderWidth: 1,
+                            fill: true,
+                        }]
+                    },
+                    options: {
+                        scales: {
+                            x: {
+                                type: 'time',
+                                time: {
+                                    unit: 'day',
+                                    tooltipFormat: 'MMM dd, YYYY',
+                                    displayFormats: {
+                                        day: 'MMM dd'
+                                    }
+                                },
+                                ticks: {
+                                    // This ensures that ticks are evenly spaced
+                                    //source: 'labels',
+                                    stepSize: 1
+                                }
+                            },
+                            y: {
+                                beginAtZero: true,
+                                max: maxYValue,
+                                ticks: {
+                                    suggestedMax: maxYValue,
+                                }
+                            }
+                            
+                        }
+                    }
+                });
+            });
+        </script>

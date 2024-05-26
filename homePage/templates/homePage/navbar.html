@@ -1,0 +1,54 @@
+{% load group_filters %}
+<aside class="relative bg-sidebar h-screen w-64 hidden sm:block shadow-xl">
+    <!-- navbar.html -->
+    <div class="p-6">
+        <a href="/" class="text-white text-3xl font-semibold uppercase hover:text-gray-300">[IWP]</a>
+        <a href="/whistleblower/report/" class="w-full bg-white cta-btn font-semibold py-2 mt-5 rounded-br-lg rounded-bl-lg rounded-tr-lg shadow-lg hover:shadow-xl hover:bg-gray-300 flex items-center justify-center">
+            <i class="fas fa-plus mr-3"></i> New Report
+        </a>
+    </div>
+
+    <!-- navbar.html -->
+    <nav class="text-white text-base font-semibold pt-3">
+        <a href="/" class="flex items-center text-white py-4 pl-6 nav-item">
+            <i class="fas fa-home mr-3"></i> Home
+        </a>
+        <a href="/whistleblower/policy/" class="flex items-center text-white opacity-75 hover:opacity-100 py-4 pl-6 nav-item">
+            <i class="fas fa-file-alt mr-3"></i> Whistleblowing Policies and Law
+        </a>
+        <a href="/whistleblower/reports_list/" class="flex items-center text-white opacity-75 hover:opacity-100 py-4 pl-6 nav-item">
+            <i class="fas fa-file-alt mr-3"></i> All Published Reports
+        </a>
+        <!-- Add the admin console page-->
+        {% if user|has_group:"siteAdmin" %}
+        <a href="/whistleblower/admin-dashboard/" class="flex items-center text-white opacity-75 hover:opacity-100 py-4 pl-6 nav-item">
+            <i class="fas fa-user mr-3"></i> [ADMIN] Review Submissions
+        </a>
+        <a href="/whistleblower/review_appeals/" class="flex items-center text-white opacity-75 hover:opacity-100 py-4 pl-6 nav-item">
+            <i class="fas fa-user mr-3"></i> [ADMIN] Review Appeals
+        </a>
+        {% endif %}
+        <!-- Conditional display for authentication status -->
+        {% if user.is_authenticated %}
+        {% if not user|has_group:"siteAdmin" %}
+        <a href="/whistleblower/pending_submissions/" class="flex items-center text-white opacity-75 hover:opacity-100 py-4 pl-6 nav-item">
+            <i class="far fa-eye mr-3"></i> Your Pending Submissions
+        </a>
+        <a href="/whistleblower/denied_submissions/" class="flex items-center text-white opacity-75 hover:opacity-100 py-4 pl-6 nav-item">
+            <i class="fas fa-ban mr-3"></i> Your Denied Submissions
+        </a>
+        <a href="{% url 'whistleblower:all_submissions' %}" class="flex items-center text-white opacity-75 hover:opacity-100 py-4 pl-6 nav-item">
+            <i class="fas fa-times-circle mr-3"></i> All Your Reports
+        </a>
+
+        {% endif %}
+        <a href="/accounts/profile/" class="flex items-center text-white opacity-75 hover:opacity-100 py-4 pl-6 nav-item">
+            <i class="fas fa-user mr-3"></i> View Profile
+        </a>
+        {% else %}
+        <a href="/accounts/signin/" class="flex items-center text-white opacity-75 hover:opacity-100 py-4 pl-6 nav-item">
+            <i class="fas fa-sign-in-alt mr-3"></i> Sign In
+        </a>
+        {% endif %}
+    </nav>
+</aside>

@@ -1,0 +1,98 @@
+{% extends 'homePage/base.html' %}
+
+{% block content %}
+<div class="flex items-center justify-center bg-gray-100">
+    <div class="bg-white shadow-md rounded w-full p-10">
+        <div class="container mx-auto">
+            <div class="mb-6">
+                <h1 class="text-xl font-semibold">Admin Dashboard: Review Submissions</h1>
+            </div>
+
+            <!-- Combined Search and Sorting Form -->
+            <form method="get" action="" class="mb-6">
+                <input type="hidden" name="search_query" value="{{ request.GET.search_query }}">
+
+                <div class="flex flex-wrap items-center justify-between gap-4">
+                    <div class="flex-grow">
+                        <input type="text" name="search_query" placeholder="Search reports..." value="{{ request.GET.search_query }}" class="form-input w-full px-4 py-2 border rounded"/>
+                    </div>
+
+                    <div>
+                        <label for="searchBarCustom" class="mr-2">Filter by:</label>
+                        <select name="searchBarCustom" id="searchBarCustom" class="form-select px-4 py-2 border rounded cursor-pointer">
+                            <option value="">All Fields</option>
+                            <option value="Username" {% if request.GET.searchBarCustom == "Username" %}selected{% endif %}>Username</option>
+                            <option value="Description" {% if request.GET.searchBarCustom == "Description" %}selected{% endif %}>Description</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <select name="sort" class="form-select px-4 py-2 border rounded cursor-pointer">
+                            <option value="date_desc" {% if request.GET.sort == "date_desc" %}selected{% endif %}>Date: Newest first</option>
+                            <option value="date_asc" {% if request.GET.sort == "date_asc" %}selected{% endif %}>Date: Oldest first</option>
+                            <option value="status" {% if request.GET.sort == "status" %}selected{% endif %}>Status</option>
+                            <option value="new" {% if request.GET.sort == "new" %}selected{% endif %}>New</option>
+                            <option value="in_progress" {% if request.GET.sort == "in_progress" %}selected{% endif %}>In Progress</option>
+                            <option value="appealed" {% if request.GET.sort == "appealed" %}selected{% endif %}>Appealed</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Search</button>
+                    </div>
+                </div>
+            </form>
+
+            <!-- Reports Table -->
+            {% if reports %}
+            <div class="overflow-x-auto">
+                <table class="w-full text-sm text-left text-gray-500">
+                    <thead class="text-xs text-gray-700 uppercase bg-gray-50">
+                    <tr>
+                        <th scope="col" class="px-6 py-3">Title</th>
+                        <th scope="col" class="px-6 py-3">Submitted By</th>
+                        <th scope="col" class="px-6 py-3">Status</th>
+                        <th scope="col" class="px-6 py-3">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for report in reports %}
+                    <tr class="bg-white border-b">
+                        <td class="px-6 py-4">{{ report.title }}</td>
+                        <td class="px-6 py-4">{{ report.reported_by.username|default:"Anonymous" }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap">
+                            {% if report.get_status_display == "In Progress" %}
+                            <span class="relative inline-block px-3 py-1 font-medium text-orange-900 leading-tight">
+                                <span aria-hidden="true" class="absolute inset-0.5 bg-yellow-200 opacity-50 rounded-full"></span>
+                                <span class="relative">In Progress</span>
+                            </span>
+                            {% elif report.get_status_display == "New" %}
+                            <span class="relative inline-block px-3 py-1 font-medium text-green-900 leading-tight">
+                                <span aria-hidden="true" class="absolute inset-0 bg-green-200 opacity-50 rounded-full"></span>
+                                <span class="relative">New</span>
+                            </span>
+                            {% elif report.get_status_display == "Resolved" %}
+                            <span class="relative inline-block px-3 py-1 font-medium text-red-900 leading-tight">
+                                <span aria-hidden="true" class="absolute inset-0 bg-red-200 opacity-50 rounded-full"></span>
+                                <span class="relative">Resolved</span>
+                            </span>
+                            {% else %}
+                            <!-- Fallback for any status that doesn't match the above, adjust as needed -->
+                            <span class="relative">{{ report.get_status_display }}</span>
+                            {% endif %}
+                        </td>
+                        <td class="px-6 py-4">
+                            <a href="{% url 'whistleblower:submission_details' report.id %}" class="text-indigo-600 hover:text-indigo-900">View details</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="mt-4 text-gray-600">No reports found.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
