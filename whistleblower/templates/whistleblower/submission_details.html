@@ -1,0 +1,115 @@
+{% extends 'homePage/base.html' %}
+{% block title %}Reports List{% endblock %}
+{% load group_filters %}
+{% block content %}
+<style>
+    /* Ensure the html and body tags occupy the full height */
+    html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+    }
+
+    /* Apply full height to all parent containers */
+    .full-height {
+        min-height: 100%; /* Use min-height to ensure content can expand beyond the viewport */
+    }
+
+    /* Specific styling for the iframe container, adjust as needed */
+    .iframe-container {
+        height: 500px; /* Example fixed height, consider using vh for responsive designs */
+    }
+</style>
+
+<div class="flex items-center justify-center bg-gray-100 full-height">
+    <div class="bg-white shadow-md rounded lg:w-3/4 md:w-1/2 w-full p-10 full-height">
+        <div class="bg-white shadow overflow-hidden sm:rounded-lg full-height">
+            <div class="px-4 py-5 sm:px-6">
+                <h3 class="text-lg leading-6 font-medium text-white-900">
+                    Report Information:
+                </h3>
+            </div>
+            <div class="border-t border-gray-200">
+                <dl>
+                    <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                        <dt class="text-sm font-medium text-gray-500">
+                            Title:
+                        </dt>
+                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                            {{ report.title }}
+                        </dd>
+                    </div>
+                    <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                        <dt class="text-sm font-medium text-gray-500">
+                            Status:
+                        </dt>
+                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                            {{ report.get_status_display }}
+                        </dd>
+                    </div>
+                    <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                        <dt class="text-sm font-medium text-gray-500">
+                            Submitted by:
+                        </dt>
+                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                            {% if report.reported_by is None or report.appear_anonymous %}anonymous user{% else %}{{ report.reported_by.username }}{% endif %} on {{ report.created_at|date:"N j, Y" }}
+                        </dd>
+                    </div>
+                    <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                        <dt class="text-sm font-medium text-gray-500">
+                            Report Description:
+                        </dt>
+                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                            {{ report.description }}
+                        </dd>
+                    </div>
+                    <div class="bg-gray-50 px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                        <dt class="text-sm font-medium text-gray-500">
+                            Admin Notes:
+                        </dt>
+                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                            {{ report.admin_notes|default:"No notes provided" }}            </dd>
+                    </div>
+                    <div class="bg-white px-4 py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+                        <dt class="text-sm font-medium text-gray-500">
+                            Delete Report:
+                        </dt>
+                        <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+                            <button onclick="confirmDelete()" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                                Delete All Files and Report
+                            </button>
+                        </dd>
+
+                    <div>
+                        <!-- Add more details as needed -->
+                        {% if user|has_group:"siteAdmin" %}
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <a href="{% url 'whistleblower:edit_submission' report.id %}" class="text-indigo-600 hover:text-indigo-900">Edit Submission</a>
+                            </td>
+                        {% endif %}
+                    </div>
+                </dl>
+                {% if report.file %}
+                    <hr class="my-6">
+                    <div class="iframe-container"> <!-- Wrapper for the iframe -->
+                        <iframe
+                            src="{{ report.file.url }}"
+                            frameBorder="0"
+                            scrolling="auto"
+                            style="height:100%; width:100%;" /* Ensure iframe takes full size */
+                        ></iframe>
+                    </div>
+                {% endif %}
+
+            </div>
+        </div>  
+    </div>
+</div>
+<script>
+    function confirmDelete() {
+        if (confirm('Are you sure you want to delete all files and the report? This cannot be undone.')) {
+            window.location.href = "{% url 'whistleblower:delete_report_files' report.id %}";
+        }
+    }
+    </script>
+{% endblock %}

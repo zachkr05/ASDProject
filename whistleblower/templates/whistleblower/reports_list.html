@@ -1,0 +1,206 @@
+{% extends 'homePage/base.html' %}
+{% block title %}Reports List{% endblock %}
+{% block content %}
+<div class="flex items-center justify-center bg-gray-100">
+    <div class="bg-white shadow-md rounded w-full p-10">
+        {% if not user.is_authenticated %}
+            <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mt-4 rounded-lg shadow-md" role="alert">
+                <p class="font-bold">Disclaimer</p>
+                <p>While all users may view published and complete reports, only registered users can vote. You must be logged in to vote. Sign in <a href="{% url 'accounts:signin' %}" class="underline font-semibold">here</a>.</p>
+            </div>
+        {% endif %}
+        <div class="container mx-auto px-4 py-8">
+            <p class="text-xl pb-3 flex items-center">
+                <i class="fas fa-list mr-3"></i> All submitted reports:
+            </p>
+            <form method="get" action="" class="mb-6">
+                <input type="hidden" name="search_query" value="{{ request.GET.search_query }}">
+
+                <div class="flex flex-wrap items-center justify-between gap-4">
+                    <div class="flex-grow">
+                        <input type="text" name="search_query" placeholder="Search reports..." value="{{ request.GET.search_query }}" class="form-input w-full px-4 py-2 border rounded"/>
+                    </div>
+
+                    <div>
+                        <label for="searchBarCustom" class="mr-2">Filter by:</label>
+                        <select name="searchBarCustom" id="searchBarCustom" class="form-select px-4 py-2 border rounded cursor-pointer">
+                            <option value="">All Fields</option>
+                            <option value="Username" {% if request.GET.searchBarCustom == "Username" %}selected{% endif %}>Username</option>
+                            <option value="Description" {% if request.GET.searchBarCustom == "Description" %}selected{% endif %}>Description</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label for="searchBarCustom" class="mr-2">Sort by:</label>
+                        <select name="sort" class="form-select px-4 py-2 border rounded cursor-pointer">
+                            <option value="date_desc" {% if request.GET.sort == "date_desc" %}selected{% endif %}>Date: Newest first</option>
+                            <option value="date_asc" {% if request.GET.sort == "date_asc" %}selected{% endif %}>Date: Oldest first</option>
+                            <option value="upvote_desc" {% if request.GET.sort == "upvote_desc" %}selected{% endif %}>Upvotes: High to Low</option>
+                            <option value="upvote_asc" {% if request.GET.sort == "upvote_asc" %}selected{% endif %}>Upvotes: Low to High</option>
+                            <option value="status" {% if request.GET.sort == "status" %}selected{% endif %}>Status</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <button type="submit" class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">Search</button>
+                    </div>
+                </div>
+            </form>
+            <div class="bg-white shadow overflow-hidden rounded-lg">
+
+                <div class="responsive-table-container max-w-full overflow-x-auto">
+                    <table class="min-w-full divide-y divide-gray-200">
+                        <thead class="bg-gray-50">
+                            <tr>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/4 md:w-auto">Title</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/4 md:w-auto">Company</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/4 md:w-auto">Status</th>
+                                <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/6 md:w-auto">Actions</th>
+                                <th class="px-3 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/12 md:w-auto">Vote</th>
+                                <th class="px-1 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-1/12 md:w-auto"># of Votes</th>
+                            </tr>
+                        </thead>
+                        <tbody class="bg-white divide-y divide-gray-200">
+                            {% for report in reports %}
+                            <tr>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    {{ report.title|slice:":25" }}{% if report.title|length > 20 %}...{% endif %}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">{{ report.company }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    {% if report.get_status_display == "In Progress" %}
+                                    <span class="relative inline-block px-3 py-1 font-medium text-orange-900 leading-tight">
+                                        <span aria-hidden="true" class="absolute inset-0.5 bg-yellow-200 opacity-50 rounded-full"></span>
+                                        <span class="relative">In Progress</span>
+                                    </span>
+                                    {% elif report.get_status_display == "New" %}
+                                    <span class="relative inline-block px-3 py-1 font-medium text-green-900 leading-tight">
+                                        <span aria-hidden="true" class="absolute inset-0 bg-green-200 opacity-50 rounded-full"></span>
+                                        <span class="relative">New</span>
+                                    </span>
+                                    {% elif report.get_status_display == "Resolved" %}
+                                    <span class="relative inline-block px-3 py-1 font-medium text-red-900 leading-tight">
+                                        <span aria-hidden="true" class="absolute inset-0 bg-red-200 opacity-50 rounded-full"></span>
+                                        <span class="relative">Resolved</span>
+                                    </span>
+                                    {% else %}
+                                    <!-- Fallback for any status that doesn't match the above, adjust as needed -->
+                                    <span class="relative">{{ report.get_status_display }}</span>
+                                    {% endif %}
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <a href="{% url 'whistleblower:report_info' report.id %}" class="text-indigo-600 hover:text-indigo-900">View details</a>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap flex items-center justify-start space-x-2">
+                                    <!-- Upvote Button -->
+                                    <a href="#" class="upvote-button bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-3 md:px-4 text-xs md:text-sm rounded {{ report.user_has_upvoted|yesno:'shaded,' }}{% if not user.is_authenticated or report.user_has_upvoted %}opacity-50 cursor-not-allowed{% endif %}"
+                                        data-report-id="{{ report.id }}"
+                                        {% if not user.is_authenticated or report.user_has_upvoted %}onclick="event.preventDefault();" title="You have already voted"{% endif %}
+                                        >
+                                        Upvote
+                                    </a>
+                                    <!-- Downvote Button -->
+                                    <a href="#" class="downvote-button bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-3 md:px-4 text-xs md:text-sm rounded {{ report.user_has_downvoted|yesno:'shaded,' }}{% if not user.is_authenticated or report.user_has_downvoted %}opacity-50 cursor-not-allowed{% endif %}"
+                                        data-report-id="{{ report.id }}"
+                                        {% if not user.is_authenticated or report.user_has_downvoted %}onclick="event.preventDefault();" title="You have already voted"{% endif %}
+                                        >
+                                        Downvote
+                                    </a>
+                                </td>
+                                <td class="px-6 py-4 whitespace-nowrap" id="vote-count-{{ report.id }}">{{ report.upvotes.count }}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div id="error-modal" class="fixed inset-0 bg-black bg-opacity-50 hidden justify-center items-center" style="z-index: 1000;">
+                <div class="bg-white p-4 rounded flex justify-between items-center">
+                    <p id="error-message">You have already voted.</p>
+                    <button id="close-error-modal" class="ml-4 bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">X</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    // CSRF token setup for AJAX requests
+    const csrftoken = '{{ csrf_token }}';
+
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.upvote-button').forEach(button => {
+            button.addEventListener('click', (event) => {
+                event.preventDefault();
+                const reportId = button.getAttribute('data-report-id');
+                const isUpvote = true;
+                updateVoteCount(button, reportId, isUpvote);
+            });
+        });
+
+        document.querySelectorAll('.downvote-button').forEach(button => {
+            button.addEventListener('click', (event) => {
+                event.preventDefault();
+                const reportId = button.getAttribute('data-report-id');
+                const isUpvote = false;
+                updateVoteCount(button, reportId, isUpvote);
+            });
+        });
+    });
+
+    function showErrorModal(message) {
+        document.getElementById('error-message').textContent = message;
+        document.getElementById('error-modal').classList.remove('hidden');
+    }
+
+    document.getElementById('close-error-modal').addEventListener('click', function() {
+        document.getElementById('error-modal').classList.add('hidden');
+    });
+
+    function updateVoteCount(button, reportId, isUpvote) {
+    const url = `/whistleblower/report/${reportId}/${isUpvote ? 'upvote' : 'downvote'}/`;
+    console.log(`Attempting to ${isUpvote ? 'upvote' : 'downvote'} report ID ${reportId}`); // Debugging log
+
+    fetch(url, {
+        method: 'POST',
+        headers: { 'X-CSRFToken': csrftoken },
+    })
+    .then(response => {
+        if (!response.ok) {
+            throw new Error('Network response was not ok');
+        }
+        return response.json();
+    })
+    .then(data => {
+        console.log('Server response:', data); // Debugging log
+        if (data.error) {
+            console.error('Error from server:', data.error);
+            // Show error to the user
+            showErrorModal(data.error);
+        } else {
+            // Update UI based on successful response
+            const voteCountElement = document.getElementById(`vote-count-${reportId}`);
+            if (voteCountElement) {
+                voteCountElement.textContent = data.upvotes;
+            } else {
+                console.error('Could not find vote count element for report ID:', reportId);
+            }
+        }
+    })
+    .catch(error => {
+        console.error('Error:', error);
+        showErrorModal('An error occurred while processing your vote.');
+    });
+}
+
+</script>
+<style>
+    .shaded {
+        background-color: #d1d1d1; /* Example shaded color, choose what suits your design */
+    }
+    /* Optional: Define a class for an unshaded state if you want to explicitly remove shading */
+    .unshaded {
+        background-color: initial; /* Reset to default or specify a color */
+    }
+</style>
+{% endblock %}

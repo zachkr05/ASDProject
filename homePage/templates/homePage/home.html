@@ -1,0 +1,55 @@
+{% extends 'homePage/base.html' %}
+
+{% block title %}
+    Whistleblower App Homepage
+{% endblock %}
+
+{% block content %}
+            <div class="max-w mx-auto px-4 sm:px-6 lg:px-8">
+                <!-- Welcome Banner -->
+                <div class="text-center py-12 bg-white shadow rounded-lg">
+                    <h1 class="text-4xl font-bold text-gray-900">Welcome to the [IWP]: Internal Whistleblower Platform</h1>
+                    <p class="mt-4 text-lg text-gray-600">A safe space to report and discuss misconduct within your organization.</p>
+                </div>
+
+                <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+                    <!-- Disclaimer Banner -->
+                    <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mt-4 rounded-lg shadow-md" role="alert">
+                        <p class="font-bold">Disclaimer</p>
+                        <p>Please remember to review our <a href="whistleblower/terms/" class="underline font-semibold">Terms of Service</a> and <a href="whistleblower/privacy/" class="underline font-semibold">Privacy Policy</a> before submitting a report. Your use of this service constitutes agreement to these terms.</p>
+                    </div>
+                </div>
+
+                <!-- Data Visualization -->
+                <!-- Data Visualization Section with Two Columns -->
+                <div class="mt-8">
+                    <h1 class="text-xl pb-3 flex items-center">
+                        <i class="fas fa-list mr-3"></i> Insights & Reports:
+                    </h1>
+                    <p class="mt-2 text-lg text-gray-600">Explore data-driven insights into reports and outcomes.</p>
+            
+                    <!-- Container for Two Columns with Additional Padding Around Graphs -->
+                    <div class="flex flex-wrap -mx-4 mt-4">
+                        <!-- Column 1 for Canvas 1 with Extra Padding -->
+                        <div class="w-full md:w-1/2 px-4">
+                            <div class="bg-white shadow rounded-lg p-6 mb-4">
+                                <h3 class="text-xl font-bold text-gray-900">Report Types Overview</h3>
+                                <div class="p-4"> <!-- Added padding around the graph -->
+                                    <canvas id="chartOne"></canvas>
+                                </div>
+                            </div>
+                        </div>
+            
+                        <!-- Column 2 for Canvas 2 with Extra Padding -->
+                        <div class="w-full md:w-1/2 px-4">
+                            <div class="bg-white shadow rounded-lg p-6 mb-4">
+                                <h3 class="text-xl font-bold text-gray-900">Outcome Distribution</h3>
+                                <div class="p-4"> <!-- Added padding around the graph -->
+                                    <canvas id="chartTwo"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+{% endblock %}

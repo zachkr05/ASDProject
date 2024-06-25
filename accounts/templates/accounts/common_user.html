@@ -1,0 +1,35 @@
+{% extends 'homePage/base.html' %}
+
+{% block content %}
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Profiles</title>
+    <!-- Tailwind CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100">
+<div class="container mx-auto mt-10">
+    <div class="bg-white shadow-md rounded px-8 pt-6 pb-8 mb-4">
+        <h1 class="block text-gray-700 text-xl font-bold mb-2">Welcome, {{ user.username }}</h1>
+        <p class="text-gray-700 text-base">Account Name: {{ user.username }}</p>
+        <p class="text-gray-700 text-base">Name: {{ user.first_name }} {{ user.last_name }}</p>
+
+        <a href="{% url 'whistleblower:report' %}" class="mt-4 inline-block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+            Go to Report Page
+        </a>
+
+        <!-- Logout Form -->
+        <form action="{% url 'accounts:logout' %}" method="post" class="mt-4">
+            {% csrf_token %}
+            <button type="submit" class="bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-4 rounded">
+                Logout
+            </button>
+        </form>
+    </div>
+</div>
+</body>
+
+{% endblock %}

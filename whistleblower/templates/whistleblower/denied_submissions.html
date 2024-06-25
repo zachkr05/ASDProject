@@ -1,0 +1,67 @@
+{% extends 'homePage/base.html' %}
+{% block title %}Denied Submissions{% endblock %}
+{% block content %}
+<div class="flex items-center justify-center bg-gray-100">
+    <div class="bg-white shadow-md rounded w-full p-10">
+        <div class="container mx-auto px-4 py-8">
+            <p class="text-xl pb-3 flex items-center">
+                <i class="fas fa-ban mr-3"></i> Denied Submissions
+            </p>
+            <div class="bg-white shadow overflow-hidden rounded-lg">
+                <table class="min-w-full">
+                    <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Description</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Publication Status</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date Created</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                    </tr>
+                    </thead>
+                    {% if reports %}
+                        <tbody class="bg-white divide-y divide-gray-200">
+                        {% for report in reports %}
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ report.title }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ report.description }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                {% if report.get_status_display == "In Progress" %}
+                                <span class="relative inline-block px-3 py-1 font-medium text-orange-900 leading-tight">
+                                    <span aria-hidden="true" class="absolute inset-0.5 bg-yellow-200 opacity-50 rounded-full"></span>
+                                    <span class="relative">In Progress</span>
+                                </span>
+                                {% elif report.get_status_display == "New" %}
+                                <span class="relative inline-block px-3 py-1 font-medium text-green-900 leading-tight">
+                                    <span aria-hidden="true" class="absolute inset-0 bg-green-200 opacity-50 rounded-full"></span>
+                                    <span class="relative">New</span>
+                                </span>
+                                {% elif report.get_status_display == "Resolved" %}
+                                <span class="relative inline-block px-3 py-1 font-medium text-red-900 leading-tight">
+                                    <span aria-hidden="true" class="absolute inset-0 bg-red-200 opacity-50 rounded-full"></span>
+                                    <span class="relative">Resolved</span>
+                                </span>
+                                {% else %}
+                                <!-- Fallback for any status that doesn't match the above, adjust as needed -->
+                                <span class="relative">{{ report.get_status_display }}</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ report.publication_status }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">{{ report.created_at }}</td>
+                            <td class="px-6 py-4 whitespace-nowrap">
+                                <a href="{% url 'whistleblower:appeal' report.id %}" class="text-indigo-600 hover:text-indigo-900">Appeal</a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    {% else %}
+                        <tr>
+                            <td class="px-6 py-4 whitespace-nowrap" colspan="6">There were no denied submissions found.</td>
+                        </tr>
+                    {% endif %}
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

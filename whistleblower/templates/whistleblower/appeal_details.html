@@ -1,0 +1,66 @@
+{% extends 'homePage/base.html' %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+    <div class="bg-white shadow-md rounded-lg p-10">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-2xl font-semibold text-gray-800">Appeal Details</h1>
+            <a href="{% url 'whistleblower:edit_submission' appeal.report.id %}" class="inline-block bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out">
+                Change Details
+            </a>
+        </div>
+
+        <div class="border-t border-gray-300 pt-4 mb-6">
+            <h2 class="text-lg font-medium text-gray-700">Appeal Reasons:</h2>
+            <p class="text-gray-900 mt-2">{{ appeal.reasons }}</p>
+        </div>
+
+        <div class="border-t border-gray-300 pt-4 mb-6">
+            <h2 class="text-lg font-medium text-gray-700">Evidence:</h2>
+            {% if appeal.evidence %}
+            {% if appeal.evidence.url|slice:"-3:" == "pdf" %}
+            <div class="iframe-container" style="height: 500px; overflow: hidden;">
+                <iframe src="{{ appeal.evidence.url }}" frameborder="0" style="width:100%; height:100%;" allowfullscreen></iframe>
+            </div>
+            {% else %}
+            <img src="{{ appeal.evidence.url }}" alt="Evidence Image" class="max-w-full h-auto mt-2 rounded shadow">
+            {% endif %}
+            {% else %}
+            <p class="text-gray-900 mt-2">No evidence submitted.</p>
+            {% endif %}
+        </div>
+
+        <div class="border-t border-gray-300 pt-4">
+            <h2 class="text-xl font-semibold text-gray-800 mb-4">Related Report Details</h2>
+            {% for report in related_reports %}
+            <div class="mb-4 bg-gray-100 p-4 rounded-lg shadow-sm">
+                <h3 class="text-lg font-semibold text-gray-800">Report: {{ report.title }}</h3>
+                <div class="text-md text-gray-700 mt-2">
+                    <strong>Submitted By:</strong> {{ report.reported_by.username }}
+                </div>
+                <div class="text-md text-gray-700 mt-1">
+                    <strong>Description:</strong> {{ report.description }}
+                </div>
+                <div class="text-md text-gray-700 mt-1">
+                    <strong>Status:</strong> {{ report.get_status_display }}
+                </div>
+                {% if report.file %}
+                <div class="mt-2">
+                    <strong>File:</strong>
+                    {% if report.file.url|slice:"-3:" == "pdf" %}
+                    <div class="iframe-container" style="height: 300px;">
+                        <iframe src="{{ report.file.url }}" frameborder="0" style="width:100%; height:100%;" allowfullscreen></iframe>
+                    </div>
+                    {% else %}
+                    <img src="{{ report.file.url }}" alt="Report File" class="max-w-full h-auto mt-2 rounded shadow">
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+            {% empty %}
+            <p class="text-gray-900">No related reports found.</p>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}

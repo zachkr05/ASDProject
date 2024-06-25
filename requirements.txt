@@ -1,0 +1,16 @@
+requests
+django-allauth==0.61.1
+oauthlib
+pyOpenSSL
+django
+django-tinymce
+fontawesomefree
+django-crispy-forms
+django-recaptcha
+pillow
+six
+django-storages
+boto3
+django-heroku
+dj-database-url
+gunicorn
